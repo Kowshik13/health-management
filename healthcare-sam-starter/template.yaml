@@ -31,8 +31,7 @@ Resources:
     Properties:
       LogGroupName: !Sub "/aws/http-api/health-platform-${EnvironmentName}"
       RetentionInDays: 30
-
-   ApiGateway:
+  ApiGateway:
     Type: AWS::Serverless::HttpApi
     Properties:
       StageName: v1
