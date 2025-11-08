@@ -37,26 +37,25 @@ Resources:
     Properties:
       StageName: v1
       CorsConfiguration:
+        AllowCredentials: true
+        AllowHeaders:
+          - Authorization
+          - Content-Type
         AllowMethods:
           - GET
           - POST
           - OPTIONS
         AllowOrigins:
-          - !Sub "https://health-${EnvironmentName}.${AWS::Region}.cloudfront.net"
-          - "http://localhost:3000"
-        AllowHeaders:
-          - Authorization
-          - Content-Type
+          - "*"
       Auth:
         Authorizers:
           CognitoAuthorizer:
-            IdentitySource: "$request.header.Authorization"
+            AuthorizationScopes:
+              - email
             JwtConfiguration:
               audience:
                 - !Ref CognitoUserPoolClient
               issuer: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/${CognitoUserPool}"
-            AuthorizationScopes:
-              - email
         DefaultAuthorizer: CognitoAuthorizer
 
   ApiAccessLog:
@@ -65,75 +64,74 @@ Resources:
       LogGroupName: !Sub "/aws/apigateway/health-platform-${EnvironmentName}"
       RetentionInDays: 30
 
-UsersTable:
-  Type: AWS::DynamoDB::Table
-  Properties:
-    BillingMode: PAY_PER_REQUEST
-    AttributeDefinitions:
-      - AttributeName: userId
-        AttributeType: S
-    KeySchema:
-      - AttributeName: userId
-        KeyType: HASH
-    SSESpecification:
-      SSEEnabled: true
-    TableName: !Sub health-users-${EnvironmentName}
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+      SSESpecification:
+        SSEEnabled: true
+      TableName: !Sub health-users-${EnvironmentName}
 
-AppointmentsTable:
-  Type: AWS::DynamoDB::Table
-  Properties:
-    BillingMode: PAY_PER_REQUEST
-    AttributeDefinitions:
-      - AttributeName: appointmentId
-        AttributeType: S
-      - AttributeName: doctorId
-        AttributeType: S
-      - AttributeName: patientId
-        AttributeType: S
-      - AttributeName: slotISO
-        AttributeType: S
-    KeySchema:
-      - AttributeName: appointmentId
-        KeyType: HASH
-    GlobalSecondaryIndexes:
-      - IndexName: GSI1
-        KeySchema:
-          - AttributeName: doctorId
-            KeyType: HASH
-          - AttributeName: slotISO
-            KeyType: RANGE
-        Projection:
-          ProjectionType: ALL
-      - IndexName: GSI2
-        KeySchema:
-          - AttributeName: patientId
-            KeyType: HASH
-          - AttributeName: slotISO
-            KeyType: RANGE
-        Projection:
-          ProjectionType: ALL
-    SSESpecification:
-      SSEEnabled: true
-    TableName: !Sub health-appointments-${EnvironmentName}
+  AppointmentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: appointmentId
+          AttributeType: S
+        - AttributeName: doctorId
+          AttributeType: S
+        - AttributeName: patientId
+          AttributeType: S
+        - AttributeName: slotISO
+          AttributeType: S
+      KeySchema:
+        - AttributeName: appointmentId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: GSI1
+          KeySchema:
+            - AttributeName: doctorId
+              KeyType: HASH
+            - AttributeName: slotISO
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: GSI2
+          KeySchema:
+            - AttributeName: patientId
+              KeyType: HASH
+            - AttributeName: slotISO
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      SSESpecification:
+        SSEEnabled: true
+      TableName: !Sub health-appointments-${EnvironmentName}
 
-PatientHealthIndexTable:
-  Type: AWS::DynamoDB::Table
-  Properties:
-    BillingMode: PAY_PER_REQUEST
-    AttributeDefinitions:
-      - AttributeName: patientId
-        AttributeType: S
-      - AttributeName: recordId
-        AttributeType: S
-    KeySchema:
-      - AttributeName: patientId
-        KeyType: HASH
-      - AttributeName: recordId
-        KeyType: RANGE
-    SSESpecification:
-      SSEEnabled: true
-    TableName: !Sub health-patient-health-index-${EnvironmentName}
-
+  PatientHealthIndexTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: patientId
+          AttributeType: S
+        - AttributeName: recordId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: patientId
+          KeyType: HASH
+        - AttributeName: recordId
+          KeyType: RANGE
+      SSESpecification:
+        SSEEnabled: true
+      TableName: !Sub health-patient-health-index-${EnvironmentName}
 
   ClinicalRawBucket:
     Type: AWS::S3::Bucket
