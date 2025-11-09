@@ -1,0 +1,34 @@
+[
+  {
+    "email": "doc.cardio@example.com",
+    "firstName": "Alice",
+    "lastName": "Cardio",
+    "specialty": "Cardiology",
+    "languages": ["English", "French"],
+    "city": "Paris"
+  },
+  {
+    "email": "doc.derm@example.com",
+    "firstName": "Ben",
+    "lastName": "Derm",
+    "specialty": "Dermatology",
+    "languages": ["English"],
+    "city": "Lyon"
+  },
+  {
+    "email": "doc.neuro@example.com",
+    "firstName": "Nina",
+    "lastName": "Neuro",
+    "specialty": "Neurology",
+    "languages": ["English"],
+    "city": "Marseille"
+  },
+  {
+    "email": "doc.pulm@example.com",
+    "firstName": "Paul",
+    "lastName": "Pulmo",
+    "specialty": "Pulmonology",
+    "languages": ["French"],
+    "city": "Paris"
+  }
+]

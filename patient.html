@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patient workspace</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header class="card page-header">
+        <div>
+          <h1>Patient workspace</h1>
+          <p class="helper-text">Signed in as <span id="userEmail"></span></p>
+        </div>
+        <button type="button" class="secondary" id="signOutBtn">Sign out</button>
+      </header>
+
+      <section class="card" aria-labelledby="intakeHeading">
+        <div class="section-header">
+          <div>
+            <h2 id="intakeHeading">Prepare your visit</h2>
+            <p class="helper-text">Select your chief complaint and enter the vitals requested for triage.</p>
+          </div>
+        </div>
+        <form id="intakeForm" class="vitals-form" novalidate>
+          <label>
+            Chief complaint
+            <select name="chiefComplaint" id="chiefComplaint" required aria-describedby="complaintHelp">
+              <option value="">Select complaint</option>
+            </select>
+            <span id="complaintHelp" class="helper-text">Complaint drives the specialty recommendation and extra vitals.</span>
+            <span class="error-text" data-error-for="chiefComplaint"></span>
+          </label>
+          <div class="badge info" id="recommendedSpecialty" aria-live="polite"></div>
+          <div class="vitals-section" aria-labelledby="mandatoryHeading">
+            <h3 id="mandatoryHeading">Mandatory vitals</h3>
+            <div class="layout-grid two-col" id="mandatoryVitals"></div>
+          </div>
+          <div class="vitals-section" aria-labelledby="extraHeading">
+            <h3 id="extraHeading">Complaint-specific vitals</h3>
+            <div class="layout-grid two-col" id="complaintVitals"></div>
+            <p class="helper-text" id="extraHelp">Complete all required fields for the selected complaint.</p>
+          </div>
+          <div class="layout-grid two-col">
+            <label>
+              Known allergies
+              <select id="allergiesSelect" name="allergies" multiple size="5" aria-describedby="allergyHelp"></select>
+              <span id="allergyHelp" class="helper-text">Select all that apply. Hold Ctrl/Cmd to multi-select.</span>
+              <span class="error-text" data-error-for="allergies"></span>
+            </label>
+            <label id="otherAllergyField" hidden>
+              Describe other allergy
+              <input type="text" id="otherAllergyInput" maxlength="80" aria-describedby="otherAllergyHelp" />
+              <span id="otherAllergyHelp" class="helper-text">Use letters and spaces only.</span>
+              <span class="error-text" data-error-for="otherAllergy"></span>
+            </label>
+          </div>
+          <label>
+            Current medications <span class="text-muted">(optional)</span>
+            <textarea id="medicationsInput" rows="3" maxlength="240" placeholder="e.g., Paracetamol 500mg"></textarea>
+            <span class="helper-text">Free text is sanitized client-side before submission.</span>
+          </label>
+          <div class="form-actions">
+            <button type="button" id="findDoctorsBtn">Find doctors</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card" aria-labelledby="doctorSearchHeading">
+        <div class="section-header">
+          <div>
+            <h2 id="doctorSearchHeading">Available doctors</h2>
+            <p class="helper-text">Filter by city or language to refine your matches.</p>
+          </div>
+          <div class="filters">
+            <label>
+              City
+              <select id="doctorCityFilter">
+                <option value="">Any city</option>
+              </select>
+            </label>
+            <label>
+              Language
+              <select id="doctorLanguageFilter">
+                <option value="">Any language</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div id="doctorResults" class="list" role="list" aria-live="polite"></div>
+      </section>
+
+      <section class="card" aria-labelledby="appointmentsHeading">
+        <div class="section-header">
+          <div>
+            <h2 id="appointmentsHeading">My appointments</h2>
+            <p class="helper-text">Track status updates and cancellations in real time.</p>
+          </div>
+        </div>
+        <div class="list" id="appointmentsList" role="list"></div>
+      </section>
+
+      <section class="card" aria-labelledby="healthIndexHeading">
+        <div class="section-header">
+          <div>
+            <h2 id="healthIndexHeading">Latest submitted vitals</h2>
+            <p class="helper-text">A snapshot of the most recent intake saved in the patient health index.</p>
+          </div>
+        </div>
+        <div id="healthIndexPanel" class="list"></div>
+      </section>
+    </main>
+
+    <script type="module" src="./assets/patient.js"></script>
+  </body>
+</html>
