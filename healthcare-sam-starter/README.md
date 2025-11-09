@@ -4,7 +4,7 @@ This SAM application provisions the serverless backend for the health management
 
 ## Prerequisites
 
-- AWS CLI configured with sufficient permissions to create IAM roles, Cognito, DynamoDB, S3, and EventBridge resources.
+- AWS CLI configured with sufficient permissions to create IAM roles, Cognito, DynamoDB, S3, EventBridge, and KMS resources.
 - AWS SAM CLI 1.100+.
 - Python 3.11 for local packaging.
 
@@ -62,9 +62,7 @@ The template creates three encrypted buckets:
 - `hm-analytics-curated-<env>-<account>` – receives appointment events written by the EventBridge consumer.
 - `hm-feature-store-<env>-<account>` – holds curated features for ML workflows.
 
-Buckets and tables use AWS-managed encryption keys (SSE-S3 and DynamoDB-managed KMS) by default to keep the footprint within
-free-tier friendly limits. You can supply your own KMS keys by extending the template if your compliance requirements demand
-customer-managed encryption.
+Bucket encryption is enforced via a customer-managed KMS key with rotation enabled.
 
 ## Seeding Doctors
 
@@ -72,7 +70,7 @@ To pre-populate the Users table with doctor profiles:
 
 ```bash
 python scripts/seed_doctors.py --table $(aws cloudformation describe-stacks \
-  --stack-name health-management-dev \
+  --stack-name sam-app \
   --query 'Stacks[0].Outputs[?OutputKey==`UsersTableName`].OutputValue' \
   --output text)
 ```
