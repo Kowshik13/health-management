@@ -3,18 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Patient workspace</title>
+    <title>Patient Portal - Health Management Platform</title>
     <link rel="stylesheet" href="./assets/styles.css" />
   </head>
   <body>
     <main>
       <header class="card page-header">
         <div>
-          <h1>Patient workspace</h1>
-          <p class="helper-text">Signed in as <span id="userEmail"></span></p>
+          <h1>❤️ Patient Portal</h1>
+          <p class="helper-text">👤 <strong id="userName"></strong> • <span id="userEmail"></span></p>
         </div>
         <div class="page-actions">
-          <button type="button" class="secondary" id="demoDataBtn" hidden>Load demo data</button>
           <button type="button" class="secondary" id="signOutBtn">Sign out</button>
         </div>
       </header>
@@ -22,66 +21,44 @@
       <section class="card" aria-labelledby="intakeHeading">
         <div class="section-header">
           <div>
-            <h2 id="intakeHeading">Prepare your visit</h2>
+            <h2 id="intakeHeading">🏥 Book an Appointment</h2>
             <p class="helper-text">
-              Select the problem that best describes your symptoms. We will gather the vitals required for triage and recommend a specialty.
+              Select a specialty, enter your vitals, and search for available doctors in your area.
             </p>
           </div>
         </div>
         <form id="intakeForm" class="vitals-form" novalidate>
           <label>
-            Problem
-            <select name="problem" id="problemSelect" required aria-describedby="problemHelp">
-              <option value="">Select a problem</option>
-            </select>
-            <span id="problemHelp" class="helper-text">Problems control the required vitals and suggested specialty.</span>
-            <span class="error-text" data-error-for="problem"></span>
-          </label>
-          <label>
-            Recommended specialty
+            <strong>Medical Specialty</strong>
             <select id="specialtySelect" required>
               <option value="">Select specialty</option>
             </select>
-            <span class="helper-text">Change if you prefer a different specialty.</span>
             <span class="error-text" data-error-for="specialty"></span>
           </label>
-          <div class="badge info" id="recommendedSpecialty" aria-live="polite"></div>
 
           <div class="vitals-section" aria-labelledby="mandatoryHeading">
-            <h3 id="mandatoryHeading">Mandatory vitals</h3>
+            <h3 id="mandatoryHeading">📋 Your Vital Signs</h3>
             <div class="layout-grid two-col" id="mandatoryVitals"></div>
           </div>
 
-          <div class="vitals-section" aria-labelledby="extraHeading">
-            <h3 id="extraHeading">Problem-specific vitals</h3>
-            <div class="layout-grid two-col" id="problemVitals"></div>
-            <p class="helper-text">All listed vitals are required for the chosen problem.</p>
-          </div>
-
-          <div class="layout-grid three-col" id="searchFilters">
+          <div class="layout-grid two-col" id="searchFilters">
             <label>
-              Preferred city
+              <strong>Preferred City</strong>
               <select id="locationFilter">
-                <option value="">Any</option>
+                <option value="">Any location</option>
               </select>
             </label>
             <label>
-              Preferred language
-              <select id="languageFilter">
-                <option value="">Any</option>
-              </select>
-            </label>
-            <label>
-              Available slots
+              <strong>Availability Window</strong>
               <select id="slotWindow">
+                <option value="3">Next 3 days</option>
                 <option value="7">Next 7 days</option>
-                <option value="14">Next 14 days</option>
               </select>
             </label>
           </div>
 
           <div class="form-actions">
-            <button type="button" id="findDoctorsBtn">Find doctors</button>
+            <button type="button" id="findDoctorsBtn">🔍 Find Available Doctors</button>
           </div>
         </form>
       </section>
@@ -89,8 +66,8 @@
       <section class="card" aria-labelledby="doctorSearchHeading">
         <div class="section-header">
           <div>
-            <h2 id="doctorSearchHeading">Available doctors</h2>
-            <p class="helper-text">Results honour your filters and the recommended specialty. Select a slot to book.</p>
+            <h2 id="doctorSearchHeading">👨‍⚕️ Available Doctors</h2>
+            <p class="helper-text">Doctors matching your search criteria. Click on a time slot to book.</p>
           </div>
         </div>
         <div id="doctorResults" class="list" role="list" aria-live="polite"></div>
@@ -99,8 +76,8 @@
       <section class="card" aria-labelledby="appointmentsHeading">
         <div class="section-header">
           <div>
-            <h2 id="appointmentsHeading">My appointments</h2>
-            <p class="helper-text">Track booking statuses. Cancel if you can no longer attend.</p>
+            <h2 id="appointmentsHeading">📅 My Appointments</h2>
+            <p class="helper-text">View your upcoming appointments and their current status. You can cancel if needed.</p>
           </div>
         </div>
         <div class="list" id="appointmentsList" role="list" aria-live="polite"></div>
@@ -109,11 +86,29 @@
       <section class="card" aria-labelledby="latestVitalsHeading">
         <div class="section-header">
           <div>
-            <h2 id="latestVitalsHeading">Latest submitted vitals</h2>
-            <p class="helper-text">The most recent intake snapshot saved to the patient health index.</p>
+            <h2 id="latestVitalsHeading">💉 Latest Submitted Vitals</h2>
+            <p class="helper-text">Your most recent vital signs recorded in the patient health index.</p>
           </div>
         </div>
         <div id="healthIndexPanel" class="list" aria-live="polite"></div>
+      </section>
+
+      <section class="card" aria-labelledby="diabetesPredictorHeading">
+        <div class="section-header">
+          <div>
+            <h2 id="diabetesPredictorHeading">🩺 Diabetes Risk Assessment</h2>
+            <p class="helper-text">Interactive risk predictor using machine learning. Results are for educational purposes only and are not saved.</p>
+          </div>
+        </div>
+        <form id="diabetesPredictorForm" class="vitals-form" novalidate>
+          <div class="layout-grid two-col" id="predictorFields">
+            <!-- Fields will be rendered by JS -->
+          </div>
+          <div class="form-actions">
+            <button type="button" id="predictBtn">🔬 Predict Diabetes Risk</button>
+          </div>
+          <div id="diabetesResult" class="helper-text" aria-live="polite"></div>
+        </form>
       </section>
     </main>
 

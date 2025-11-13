@@ -8,7 +8,7 @@ import {
   validateEmail,
   validateStrongPassword,
 } from "./app.js";
-import { LANGUAGE_OPTIONS, LOCATION_OPTIONS, SPECIALTIES } from "./constants.js";
+import { LOCATION_OPTIONS, SPECIALTIES } from "./constants.js";
 
 let pendingEmail = "";
 
@@ -26,7 +26,8 @@ function clearErrors() {
 }
 
 function populateOptions(select, values) {
-  select.innerHTML = `${select.name !== "languages" ? '<option value="">Select</option>' : ""}`;
+  // Always include a default "Select" option for dropdowns.
+  select.innerHTML = '<option value="">Select</option>';
   values.forEach((value) => {
     const option = document.createElement("option");
     option.value = value;
@@ -35,15 +36,8 @@ function populateOptions(select, values) {
   });
 }
 
-function populateLanguages(select) {
-  select.innerHTML = "";
-  LANGUAGE_OPTIONS.forEach((value) => {
-    const option = document.createElement("option");
-    option.value = value;
-    option.textContent = value;
-    select.appendChild(option);
-  });
-}
+// No languages required in the simplified application; this function is a no-op.
+function populateLanguages() {}
 
 function toggleDoctorFields(role) {
   const section = document.querySelector("#doctorFields");
@@ -54,19 +48,14 @@ function toggleDoctorFields(role) {
   });
   if (!shouldShow) {
     section.querySelectorAll("select").forEach((select) => {
-      if (select.multiple) {
-        Array.from(select.options).forEach((option) => {
-          option.selected = false;
-        });
-      } else {
-        select.value = "";
-      }
+      select.value = "";
     });
   }
 }
 
-function selectedLanguages(select) {
-  return Array.from(select.selectedOptions).map((option) => option.value);
+// Removed language selection; return an empty array for legacy usage.
+function selectedLanguages() {
+  return [];
 }
 
 function validateDoctorFields(form) {
@@ -77,10 +66,6 @@ function validateDoctorFields(form) {
   }
   if (!form.city.value) {
     setError("city", "Select a city");
-    valid = false;
-  }
-  if (!selectedLanguages(form.languages).length) {
-    setError("languages", "Select at least one language");
     valid = false;
   }
   return valid;
@@ -166,22 +151,43 @@ async function handleResend() {
   }
 }
 
+function enableEasyMultiSelect(select) {
+  if (!select || !select.multiple) return;
+
+  // Allow single clicks to toggle options (no Ctrl/Cmd needed)
+  select.addEventListener("mousedown", (e) => {
+    const opt = e.target;
+    if (opt.tagName !== "OPTION") return;
+    e.preventDefault();              // prevent native selection behavior
+    opt.selected = !opt.selected;    // toggle
+    // notify React-less forms that value changed
+    select.dispatchEvent(new Event("input",  { bubbles: true }));
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+}
+
+
 function attachEvents() {
   const form = document.querySelector("#signupForm");
   const submitBtn = document.querySelector("#signupBtn");
+
   populateOptions(form.specialty, SPECIALTIES);
   populateOptions(form.city, LOCATION_OPTIONS);
-  populateLanguages(form.languages);
+  // Languages are not used in the simplified flow.
+
   form.role.addEventListener("change", () => toggleDoctorFields(form.role.value));
   toggleDoctorFields(form.role.value);
+
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     if (!validateForm(form)) return;
     performSignup(form, submitBtn);
   });
+
   document.querySelector("#confirmationForm").addEventListener("submit", handleConfirm);
   document.querySelector("#resendBtn").addEventListener("click", handleResend);
 }
+
 
 async function init() {
   try {

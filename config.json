@@ -2,6 +2,5 @@
   "apiBaseUrl": "https://z2g4cgeey8.execute-api.eu-west-3.amazonaws.com/v1",
   "region": "eu-west-3",
   "userPoolId": "eu-west-3_eBWHgEcTr",
-  "userPoolClientId": "1f130k3rsfiie7pug1b3rap9l3",
-  "doctorMatchEndpoint": ""
+  "userPoolClientId": "1f130k3rsfiie7pug1b3rap9l3"
 }

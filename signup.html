@@ -55,7 +55,7 @@
           <fieldset id="doctorFields" class="fieldset" hidden>
             <legend>Doctor profile</legend>
             <p class="helper-text">
-              Provide your clinical details. Specialty, languages, location, and availability are captured as Cognito custom attributes for downstream provisioning.
+              Provide your clinical details. Specialty and city are captured as Cognito custom attributes for downstream provisioning.
             </p>
             <div class="layout-grid two-col">
               <label>
@@ -73,13 +73,6 @@
                 <span class="error-text" data-error-for="city"></span>
               </label>
             </div>
-            <label>
-              Languages spoken
-              <select name="languages" multiple size="4" aria-describedby="languagesHelp">
-              </select>
-              <span id="languagesHelp" class="helper-text">Ctrl/Cmd+click to select more than one language.</span>
-              <span class="error-text" data-error-for="languages"></span>
-            </label>
           </fieldset>
           <div class="layout-grid two-col">
             <button type="submit" id="signupBtn">Create account</button>

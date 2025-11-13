@@ -17,19 +17,8 @@ const state = {
   pollHandle: null,
 };
 
-const PROBLEM_LABELS = {
-  CARDIAC: "Cardiac symptoms",
-  DERM: "Dermatological issue",
-  RESP: "Respiratory issue",
-  GI: "Gastrointestinal issue",
-  MSK: "Musculoskeletal",
-  NEURO: "Neurological",
-  GENERAL: "General checkup",
-};
-
-function reasonLabel(reasonCode) {
-  return PROBLEM_LABELS[reasonCode] || reasonCode;
-}
+// Reason codes have been removed from the simplified application.  The
+// appointment card only displays the slot time.
 
 function updateLastUpdated() {
   const label = document.querySelector("#lastUpdated");
@@ -41,11 +30,9 @@ function updateLastUpdated() {
 }
 
 function describeAppointment(appointment) {
-  const parts = [
-    formatDateTime(appointment.slotISO),
-    reasonLabel(appointment.reasonCode),
-  ];
-  return parts.join(" • ");
+  // Only display the date and time of the appointment.  We no longer show a
+  // reason code because patients do not specify problems in the simplified flow.
+  return formatDateTime(appointment.slotISO);
 }
 
 function renderActionButtons(appointment) {
@@ -143,19 +130,67 @@ async function handleDecision(appointment, action, button) {
 function renderMetrics(metrics) {
   const panel = document.querySelector("#healthSummary");
   panel.innerHTML = "";
+  
   if (!metrics) {
-    const empty = document.createElement("p");
-    empty.className = "helper-text";
-    empty.textContent = "Select an appointment to view vitals.";
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+    empty.textContent = "Select an appointment to view patient vitals.";
     panel.appendChild(empty);
     return;
   }
+  
+  // Create a professional vitals grid
+  const grid = document.createElement("div");
+  grid.className = "vitals-grid";
+  
+  // Define vital labels and units for better display
+  const vitalLabels = {
+    heightCm: { label: "Height", unit: "cm" },
+    weightKg: { label: "Weight", unit: "kg" },
+    temperatureC: { label: "Temperature", unit: "°C" },
+    bmi: { label: "BMI", unit: "" },
+    bloodPressureSystolic: { label: "BP Systolic", unit: "mmHg" },
+    bloodPressureDiastolic: { label: "BP Diastolic", unit: "mmHg" },
+    heartRate: { label: "Heart Rate", unit: "bpm" },
+    respiratoryRate: { label: "Respiratory Rate", unit: "/min" },
+    oxygenSaturation: { label: "O₂ Saturation", unit: "%" },
+    glucoseLevel: { label: "Glucose", unit: "mg/dL" },
+  };
+  
   Object.entries(metrics).forEach(([key, value]) => {
-    const row = document.createElement("div");
-    row.className = "metric";
-    row.innerHTML = `<span class="metric-label">${key}</span><span class="metric-value">${value}</span>`;
-    panel.appendChild(row);
+    const vitalInfo = vitalLabels[key] || { label: key, unit: "" };
+    
+    const card = document.createElement("div");
+    card.className = "vital-card";
+    
+    const label = document.createElement("div");
+    label.className = "vital-card-label";
+    label.textContent = vitalInfo.label;
+    
+    const valueContainer = document.createElement("div");
+    valueContainer.style.display = "flex";
+    valueContainer.style.alignItems = "baseline";
+    valueContainer.style.gap = "4px";
+    
+    const valueSpan = document.createElement("span");
+    valueSpan.className = "vital-card-value";
+    valueSpan.textContent = typeof value === 'number' ? value.toFixed(1) : value;
+    
+    const unitSpan = document.createElement("span");
+    unitSpan.className = "vital-card-unit";
+    unitSpan.textContent = vitalInfo.unit;
+    
+    valueContainer.appendChild(valueSpan);
+    if (vitalInfo.unit) {
+      valueContainer.appendChild(unitSpan);
+    }
+    
+    card.appendChild(label);
+    card.appendChild(valueContainer);
+    grid.appendChild(card);
   });
+  
+  panel.appendChild(grid);
 }
 
 async function loadPatientSummary(appointment) {
@@ -220,6 +255,8 @@ async function init() {
   if (!requireRole(["DOCTOR"])) return;
 
   const session = getSession();
+  const name = [session.given_name, session.family_name].filter(Boolean).join(" ") || "Doctor";
+  document.querySelector("#userName").textContent = name;
   document.querySelector("#userEmail").textContent = session.email;
   bindSignOut(document.querySelector("#signOutBtn"));
   setupTabs();

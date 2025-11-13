@@ -160,36 +160,24 @@ export function normalizeLanguages(values) {
 }
 
 export function buildDoctorProfile(source) {
+  // Build the doctor profile from signup fields. Languages have been removed from the simplified flow.
   const specialtyValue = typeof source.specialty === "string"
     ? source.specialty
     : source.specialty?.value;
   const cityValue = typeof source.city === "string"
     ? source.city
     : source.city?.value;
-  let languages;
-  if (Array.isArray(source.languages)) {
-    languages = source.languages;
-  } else if (source.languages?.selectedOptions) {
-    languages = Array.from(source.languages.selectedOptions).map((option) => option.value);
-  } else if (typeof source.languages === "string") {
-    languages = source.languages.split(",").map((item) => item.trim()).filter(Boolean);
-  } else {
-    languages = [];
-  }
-
   const specialty = normaliseOption(specialtyValue, SPECIALTIES);
   const city = normaliseOption(cityValue, LOCATION_OPTIONS);
-  const normalizedLanguages = normalizeLanguages(languages);
   const availSlots = Array.isArray(source.availSlots) && source.availSlots.length
     ? source.availSlots
     : generateDoctorSlots();
-
-  return {
+  const profile = {
     specialty,
     city,
-    languages: normalizedLanguages,
     availSlots,
   };
+  return profile;
 }
 
 export async function signUpUser(form) {
@@ -213,7 +201,6 @@ export async function signUpUser(form) {
     const profile = buildDoctorProfile({
       specialty: form.specialty,
       city: form.city,
-      languages: form.languages,
     });
     if (profile.specialty) {
       attributeList.push(new cognito.CognitoUserAttribute({ Name: "custom:specialty", Value: profile.specialty }));
@@ -221,14 +208,7 @@ export async function signUpUser(form) {
     if (profile.city) {
       attributeList.push(new cognito.CognitoUserAttribute({ Name: "custom:location", Value: profile.city }));
     }
-    if (profile.languages.length) {
-      attributeList.push(
-        new cognito.CognitoUserAttribute({
-          Name: "custom:languages",
-          Value: profile.languages.join(","),
-        })
-      );
-    }
+    // Omit custom:languages attribute entirely.
     attributeList.push(
       new cognito.CognitoUserAttribute({
         Name: "custom:availability",
@@ -285,6 +265,52 @@ export async function resendConfirmation(email) {
       } else {
         resolve(result);
       }
+    });
+  });
+}
+
+// ---------- Forgot password helpers ----------
+/**
+ * Initiate a password reset. Sends a verification code to the user's email via Cognito.
+ * @param {string} email The account email
+ */
+export async function requestPasswordReset(email) {
+  await loadConfig();
+  const cognito = await ensureCognitoLibrary();
+  const pool = buildUserPool(cognito);
+  const user = new cognito.CognitoUser({ Username: email.toLowerCase(), Pool: pool });
+  return new Promise((resolve, reject) => {
+    user.forgotPassword({
+      onSuccess: () => {
+        // This callback fires when the code is successfully sent
+        resolve();
+      },
+      onFailure: (err) => {
+        reject(err);
+      },
+    });
+  });
+}
+
+/**
+ * Complete the password reset by supplying the verification code and a new password.
+ * @param {string} email The account email
+ * @param {string} code The verification code received in email
+ * @param {string} newPassword The new password
+ */
+export async function resetPassword(email, code, newPassword) {
+  await loadConfig();
+  const cognito = await ensureCognitoLibrary();
+  const pool = buildUserPool(cognito);
+  const user = new cognito.CognitoUser({ Username: email.toLowerCase(), Pool: pool });
+  return new Promise((resolve, reject) => {
+    user.confirmPassword(code, newPassword, {
+      onSuccess: () => {
+        resolve();
+      },
+      onFailure: (err) => {
+        reject(err);
+      },
     });
   });
 }
@@ -376,7 +402,11 @@ export async function fetchJSON(path, options = {}) {
   if (!response.ok) {
     const message = json.message || response.statusText;
     console.error("fetchJSON error", path, message, json);
-    throw new Error(message);
+    const err = new Error(message);
+    // Attach useful debug details for callers
+    err.status = response.status;
+    err.body = json;
+    throw err;
   }
   return json;
 }
