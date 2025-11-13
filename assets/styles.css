@@ -1,4 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
 :root {
+  --radius: 10px;
   color-scheme: light;
   /* Modern healthcare palette inspired by leading health platforms */
   --primary: #0369a1; /* Clinical blue */
@@ -37,7 +40,7 @@
   --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.15);
   
   /* Professional medical-grade typography */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -85,7 +88,7 @@ main {
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius);
   padding: clamp(24px, 5vw, 32px);
   box-shadow: var(--shadow-sm);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -323,7 +326,7 @@ button:not(:disabled):focus-visible {
 /* Professional section containers */
 .section {
   background: var(--surface);
-  border-radius: 12px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   padding: 28px;
   display: grid;
@@ -375,7 +378,7 @@ button:not(:disabled):focus-visible {
 .list-item {
   padding: 20px;
   background: var(--surface);
-  border-radius: 10px;
+  border-radius: calc(var(--radius) - 2px);
   border: 1px solid var(--border);
   display: grid;
   gap: 12px;
@@ -458,11 +461,8 @@ button:not(:disabled):focus-visible {
 }
 
 .empty-state::before {
-  content: "📋";
-  display: block;
-  font-size: 2.5rem;
-  margin-bottom: 12px;
-  opacity: 0.6;
+  content: ""; /* removed emoji for a cleaner professional look */
+  display: none;
 }
 
 /* Toast notification system */
@@ -542,7 +542,7 @@ button:not(:disabled):focus-visible {
 
 .modal {
   background: var(--surface);
-  border-radius: 16px;
+  border-radius: calc(var(--radius) + 6px);
   padding: 32px;
   border: 1px solid var(--border);
   width: min(480px, 100%);
@@ -1112,11 +1112,11 @@ input[type="time"] {
 }
 
 .feature-card {
-  text-align: center;
-  padding: 28px 20px;
+  text-align: left;
+  padding: 20px 18px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius);
   transition: all 0.3s ease;
 }
 
@@ -1127,8 +1127,23 @@ input[type="time"] {
 }
 
 .feature-icon {
-  font-size: 2.5rem;
-  margin-bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 8px;
+  color: var(--primary);
+}
+
+.feature-icon svg {
+  width: 28px;
+  height: 28px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .feature-card h3 {
