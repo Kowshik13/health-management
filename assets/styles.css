@@ -200,16 +200,16 @@ input:disabled, select:disabled, textarea:disabled {
 /* Modern button system for healthcare actions */
 button {
   border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
+  border-radius: calc(var(--radius) - 2px);
+  padding: 10px 20px;
   font-size: 1rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  transition: all 0.16s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(180deg, var(--primary), var(--primary-light));
   color: white;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(3, 105, 161, 0.12);
   position: relative;
   overflow: hidden;
 }
@@ -222,18 +222,21 @@ button::before {
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+  background: rgba(255, 255, 255, 0.12);
+  transform: translate(-50%, -50%) scale(1);
+  transition: width 0.28s ease, height 0.28s ease, opacity 0.28s ease;
+  pointer-events: none;
+  opacity: 0;
 }
 
 button:hover::before {
-  width: 300px;
-  height: 300px;
+  width: 160px;
+  height: 160px;
+  opacity: 1;
 }
 
 button:hover {
-  box-shadow: var(--shadow);
+  box-shadow: 0 6px 18px rgba(3, 105, 161, 0.08);
   transform: translateY(-1px);
 }
 
@@ -255,10 +258,10 @@ button:disabled::before {
 
 /* Secondary button for non-primary actions */
 button.secondary {
-  background: var(--surface);
+  background: transparent;
   color: var(--text-secondary);
-  border: 1.5px solid var(--border);
-  box-shadow: var(--shadow-xs);
+  border: 1px solid var(--border);
+  box-shadow: none;
 }
 
 button.secondary:hover {
@@ -403,12 +406,12 @@ button:not(:disabled):focus-visible {
 
 /* Clinical status badges */
 .badge {
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 0.75rem;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  text-transform: none;
+  letter-spacing: 0.2px;
   background: var(--bg-alt);
   border: 1px solid var(--border);
   color: var(--text-secondary);
@@ -461,8 +464,16 @@ button:not(:disabled):focus-visible {
 }
 
 .empty-state::before {
-  content: ""; /* removed emoji for a cleaner professional look */
-  display: none;
+  content: "";
+  display: block;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px auto;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.85;
+  /* subtle clipboard outline SVG as data URI */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect x='7' y='4' width='10' height='4' rx='1' stroke='%2364748B' stroke-width='1.6' fill='none'/><path d='M7 8h10v12a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V8z' stroke='%2364748B' stroke-width='1.6' fill='none'/></svg>");
 }
 
 /* Toast notification system */
